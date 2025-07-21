@@ -2,6 +2,7 @@
 Future dev: 
     -Needs a multiple thread + delta time.
     -Fix player movement, to slow. (Prob cuz no delta time)
+    -Re-use some of the 2048 game components.
 Compile with: gcc spacewars.c -o spacewars
 
 */
@@ -37,10 +38,7 @@ void hideCursor() {
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &ci);
 }
 
-void gotoxy(int x, int y) {
-    COORD pos = {x, y};
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
-}
+
 
 void draw() {
     system("cls"); 
@@ -52,7 +50,7 @@ void draw() {
         for (int x = 0; x < WIDTH; x++) {
             int drawn = 0;
             if (x == playerX && y == HEIGHT - 1) {
-                printf("^");
+                printf("/\\");
                 drawn = 1;
             }
 
@@ -73,8 +71,6 @@ void draw() {
         }
         printf("#\n");
     }
-
-    // Bottom border
     for (int i = 0; i < WIDTH + 2; i++) printf("#");
     printf("\nScore: %d\n", score);
 }
