@@ -17,15 +17,18 @@ Compile with: gcc spacewars.c -o spacewars
 #define MAX_BULLETS 5
 #define MAX_ENEMIES 5
 
-typedef struct {
-    int x, y;
-    int active;
-} Bullet;
 
 typedef struct {
     int x, y;
     int active;
 } Enemy;
+typedef struct {
+    int x, y;
+    int active;
+} Bullet;
+typedef struct {
+    int x,y;
+} Player;
 
 int playerX;
 Bullet bullets[MAX_BULLETS];
@@ -37,44 +40,30 @@ void hideCursor() {
     CONSOLE_CURSOR_INFO ci = {100, FALSE};
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &ci);
 }
+void draw();
+void updateBullets();
+void updateEnemies();
+void checkCollisions();
+void shoot();
+void handleInput();
 
-
-
-void draw() {
-    system("cls"); 
-    for (int i = 0; i < WIDTH + 2; i++) printf("#");
-    printf("\n");
-
-    for (int y = 0; y < HEIGHT; y++) {
-        printf("#");
-        for (int x = 0; x < WIDTH; x++) {
-            int drawn = 0;
-            if (x == playerX && y == HEIGHT - 1) {
-                printf("/\\");
-                drawn = 1;
-            }
-
-            for (int i = 0; i < MAX_BULLETS; i++) {
-                if (bullets[i].active && bullets[i].x == x && bullets[i].y == y) {
-                    printf("|");
-                    drawn = 1;
-                }
-            }
-            for (int i = 0; i < MAX_ENEMIES; i++) {
-                if (enemies[i].active && enemies[i].x == x && enemies[i].y == y) {
-                    printf("X");
-                    drawn = 1;
-                }
-            }
-
-            if (!drawn) printf(" ");
-        }
-        printf("#\n");
+int main() {
+    srand(time(0));
+    hideCursor();
+    playerX = WIDTH / 2;
+    while (!gameOver) {
+        draw();
+        handleInput();
+        updateBullets();
+        updateEnemies();
+        checkCollisions();
+        Sleep(200); 
     }
-    for (int i = 0; i < WIDTH + 2; i++) printf("#");
-    printf("\nScore: %d\n", score);
-}
 
+    system("cls");
+    printf("\nGame Over!\nFinal Score: %d\n", score);
+    return 0;
+}
 void updateBullets() {
     for (int i = 0; i < MAX_BULLETS; i++) {
         if (bullets[i].active) {
@@ -120,6 +109,8 @@ void checkCollisions() {
     }
 }
 
+
+
 void shoot() {
     for (int i = 0; i < MAX_BULLETS; i++) {
         if (!bullets[i].active) {
@@ -141,20 +132,37 @@ void handleInput() {
     }
 }
 
-int main() {
-    srand(time(0));
-    hideCursor();
-    playerX = WIDTH / 2;
-    while (!gameOver) {
-        draw();
-        handleInput();
-        updateBullets();
-        updateEnemies();
-        checkCollisions();
-        Sleep(200); 
-    }
+void draw() {
+    system("cls"); 
+    for (int i = 0; i < WIDTH + 2; i++) printf("#");
+    printf("\n");
 
-    system("cls");
-    printf("\nGame Over!\nFinal Score: %d\n", score);
-    return 0;
+    for (int y = 0; y < HEIGHT; y++) {
+        printf("#");
+        for (int x = 0; x < WIDTH; x++) {
+            int drawn = 0;
+            if (x == playerX && y == HEIGHT - 1) {
+                printf("/\\");
+                drawn = 1;
+            }
+
+            for (int i = 0; i < MAX_BULLETS; i++) {
+                if (bullets[i].active && bullets[i].x == x && bullets[i].y == y) {
+                    printf("|");
+                    drawn = 1;
+                }
+            }
+            for (int i = 0; i < MAX_ENEMIES; i++) {
+                if (enemies[i].active && enemies[i].x == x && enemies[i].y == y) {
+                    printf("X");
+                    drawn = 1;
+                }
+            }
+
+            if (!drawn) printf(" ");
+        }
+        printf("#\n");
+    }
+    for (int i = 0; i < WIDTH + 2; i++) printf("#");
+    printf("\nScore: %d\n", score);
 }
